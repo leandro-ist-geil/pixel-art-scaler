@@ -1,0 +1,112 @@
+<!--
+  Copyright 2025 leandro-ist-geil
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pixel Art Scaler</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#60a5fa}
+    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071025 0%, #071827 100%);color:#e6eef6}
+    .wrap{max-width:1100px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+    .controls{display:flex;gap:12px;align-items:center;margin-top:16px;flex-wrap:wrap}
+    .card{background:rgba(255,255,255,0.03);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    .drop{margin-top:18px;border:2px dashed rgba(255,255,255,0.06);border-radius:10px;padding:22px;text-align:center;cursor:pointer}
+
+    .files-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px}
+    .file-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:10px;border-radius:8px;display:flex;flex-direction:column;gap:8px}
+    .thumb{width:100%;height:160px;display:block;object-fit:contain;background:#071022;border-radius:6px}
+    .row{display:flex;gap:8px;align-items:center}
+    .grow{flex:1}
+    label{font-size:12px;color:var(--muted)}
+    input[type=range]{width:220px}
+    .btn{background:var(--accent);border:none;padding:8px 10px;border-radius:8px;color:#04233d;font-weight:600;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .small{font-size:12px;padding:6px 8px}
+    footer{margin-top:18px;color:var(--muted);font-size:12px}
+    .meta{font-size:12px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Upscale Pixel Art</h1>
+        <p class="lead">Drag & drop images, choose a scale and download upsaled result.</p>
+      </div>
+    </header>
+
+    <div class="controls">
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <label class="meta">Scale: <strong id="scaleLabel">4×</strong></label>
+          <input id="scaleRange" type="range" min="1" max="32" value="4" step="1">
+          <input id="scaleNumber" type="number" min="1" max="32" value="4" style="width:64px;padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit">
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:8px"><input id="pixelate" type="checkbox" checked> <span class="meta">Nearest neighbor scaling (edges will be blurry if disabled)</span></label>
+          <button id="clearBtn" class="btn ghost small">Clear all</button>
+          <button id="downloadAll" class="btn small">Download ZIP</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:8px">
+        <div style="display:flex;gap:8px;align-items:center">
+          <label class="meta">Add files</label>
+          <input id="fileInput" type="file" accept="image/*" multiple style="display:block">
+          <button id="pasteBtn" class="btn small">Paste Image(s)</button>
+        </div>
+        <div style="margin-top:8px;color:var(--muted);font-size:12px">drag & drop to the area below or click to pick files..</div>
+      </div>
+    </div>
+
+    <div id="dropArea" class="drop card">
+      <div style="font-weight:700">Drop images here</div>
+      <div class="meta">PNG, GIF, JPG multiple files supported. Animated GIFs will upscale only their first frame.</div>
+    </div>
+
+    <div id="files" class="files-grid"></div>
+
+    <footer>
+      <div class="meta">Made for use with pixel art.</div>
+    </footer>
+  </div>
+
+<script>
+const el=e=>document.getElementById(e),dropArea=el("dropArea"),filesGrid=el("files"),scaleRange=el("scaleRange"),scaleNumber=el("scaleNumber"),scaleLabel=el("scaleLabel"),pixelate=el("pixelate"),fileInput=el("fileInput"),clearBtn=el("clearBtn"),downloadAll=el("downloadAll"),pasteBtn=el("pasteBtn");let items=[];function humanName(e){return e.replace(/[^a-z0-9\.\-_]/gi,"_")}function handleFiles(e){Array.from(e).forEach((e=>{if(!e.type.startsWith("image/"))return;const a=new FileReader;a.onload=a=>{const t=new Image;t.onload=()=>addImage(e,t),t.src=a.target.result},a.readAsDataURL(e)}))}function addImage(e,a){const t=Math.random().toString(36).slice(2,9),n=e.name||"image_"+t+".png",l=document.createElement("div");l.className="file-card";const d=document.createElement("img");d.className="thumb",d.src=a.src;const r=document.createElement("div");r.className="meta",r.textContent=`${a.width}×${a.height} — ${Math.round(e.size/1024)} KB`;const o=document.createElement("canvas");o.style.width="100%",o.style.display="block",o.height=0,o.width=0,o.dataset.name=n;const i=document.createElement("div");i.className="row";const c=document.createElement("button");c.className="btn small",c.textContent="Download PNG";const s=document.createElement("button");s.className="btn ghost small",s.textContent="Remove",i.appendChild(c),i.appendChild(s),l.appendChild(d),l.appendChild(r),l.appendChild(o),l.appendChild(i),filesGrid.appendChild(l);const m={file:e,img:a,name:n,canvas:o,card:l,thumb:d,meta:r};items.push(m),renderOne(m),c.addEventListener("click",(()=>downloadCanvasAsPNG(m))),s.addEventListener("click",(()=>removeItem(m)))}function removeItem(e){items=items.filter((a=>a!==e)),e.card.remove()}function clearAll(){items.forEach((e=>e.card.remove())),items=[]}function renderOne(e){const a=parseInt(scaleRange.value,10)||1,t=e.canvas,n=e.img,l=Math.max(1,n.naturalWidth||n.width),d=Math.max(1,n.naturalHeight||n.height);t.width=l*a,t.height=d*a,t.style.height=Math.min(200,d*a)+"px";const r=t.getContext("2d");if(r.imageSmoothingEnabled=!pixelate.checked,r.webkitImageSmoothingEnabled=r.imageSmoothingEnabled,r.msImageSmoothingEnabled=r.imageSmoothingEnabled,pixelate.checked){const e=document.createElement("canvas");e.width=l,e.height=d;const a=e.getContext("2d");a.drawImage(n,0,0,l,d);a.getImageData(0,0,l,d).data;r.clearRect(0,0,t.width,t.height),r.drawImage(e,0,0,e.width,e.height,0,0,t.width,t.height)}else r.clearRect(0,0,t.width,t.height),r.drawImage(n,0,0,t.width,t.height)}function renderAll(){items.forEach(renderOne),updateScaleLabel()}function updateScaleLabel(){scaleLabel.textContent=`${scaleRange.value}×`,scaleNumber.value=scaleRange.value}function downloadCanvasAsPNG(e){e.canvas.toBlob((a=>{const t=document.createElement("a");t.href=URL.createObjectURL(a);const n=e.name.replace(/\.([^.]*)$/,"");t.download=`${humanName(n)}@${scaleRange.value}x.png`,document.body.appendChild(t),t.click(),t.remove()}),"image/png")}async function downloadAllAsZip(){if(0===items.length)return alert("No images to download");"undefined"==typeof JSZip&&
+/*!
+
+  JSZip v3.10.0 - A JavaScript class for generating and reading zip files
+  <http://stuartk.com/jszip>
+
+  (c) 2009-2016 Stuart Knightley <stuart [at] stuartk.com>
+  Dual licenced under the MIT license or GPLv3. See https://raw.github.com/Stuk/jszip/main/LICENSE.markdown.
+
+  JSZip uses the library pako released under the MIT license :
+  https://github.com/nodeca/pako/blob/main/LICENSE
+*/
+await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js");const e=new JSZip,a=e.folder("upscaled")||e,t=items.map((e=>new Promise((t=>{e.canvas.toBlob((n=>{const l=`${humanName(e.name.replace(/\.([^.]*)$/,""))}@${scaleRange.value}x.png`;a.file(l,n),t()}),"image/png")}))));await Promise.all(t);const n=await e.generateAsync({type:"blob"}),l=document.createElement("a");l.href=URL.createObjectURL(n),l.download=`upscaled-${scaleRange.value}x.zip`,document.body.appendChild(l),l.click(),l.remove()}function loadScript(e){return new Promise(((a,t)=>{const n=document.createElement("script");n.src=e,n.onload=a,n.onerror=t,document.head.appendChild(n)}))}scaleRange.addEventListener("input",(()=>{updateScaleLabel(),renderAll()})),scaleNumber.addEventListener("change",(()=>{let e=parseInt(scaleNumber.value)||1;e<1&&(e=1),e>32&&(e=32),scaleRange.value=e,updateScaleLabel(),renderAll()})),pixelate.addEventListener("change",renderAll),clearBtn.addEventListener("click",clearAll),fileInput.addEventListener("change",(e=>handleFiles(e.target.files))),["dragenter","dragover"].forEach((e=>dropArea.addEventListener(e,(e=>{e.preventDefault(),e.stopPropagation(),dropArea.style.borderColor="rgba(96,165,250,0.6)"})))),["dragleave","drop"].forEach((e=>dropArea.addEventListener(e,(e=>{e.preventDefault(),e.stopPropagation(),dropArea.style.borderColor="rgba(255,255,255,0.06)"})))),dropArea.addEventListener("drop",(e=>{const a=e.dataTransfer;a&&a.files&&a.files.length&&handleFiles(a.files)})),dropArea.addEventListener("click",(()=>fileInput.click())),pasteBtn.addEventListener("click",(()=>{alert("Press Ctrl+V / Cmd+V to paste images from the clipboard.")})),window.addEventListener("paste",(e=>{const a=e.clipboardData&&e.clipboardData.items;if(!a)return;const t=[];for(const e of a)"file"===e.kind&&t.push(e.getAsFile());t.length&&handleFiles(t)})),downloadAll.addEventListener("click",downloadAllAsZip);
+
+</script>
+</body>
+</html>
+
