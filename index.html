@@ -21,29 +21,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Pixel Art Scaler</title>
   <style>
-    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#60a5fa}
-    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071025 0%, #071827 100%);color:#e6eef6}
-    .wrap{max-width:1100px;margin:28px auto;padding:20px}
-    header{display:flex;align-items:center;gap:16px}
-    h1{margin:0;font-size:20px}
-    p.lead{margin:0;color:var(--muted);font-size:13px}
-    .controls{display:flex;gap:12px;align-items:center;margin-top:16px;flex-wrap:wrap}
-    .card{background:rgba(255,255,255,0.03);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
-    .drop{margin-top:18px;border:2px dashed rgba(255,255,255,0.06);border-radius:10px;padding:22px;text-align:center;cursor:pointer}
-
-    .files-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px}
-    .file-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:10px;border-radius:8px;display:flex;flex-direction:column;gap:8px}
-    .thumb{width:100%;height:160px;display:block;object-fit:contain;background:#071022;border-radius:6px}
-    .row{display:flex;gap:8px;align-items:center}
-    .grow{flex:1}
-    label{font-size:12px;color:var(--muted)}
-    input[type=range]{width:220px}
-    .btn{background:var(--accent);border:none;padding:8px 10px;border-radius:8px;color:#04233d;font-weight:600;cursor:pointer}
-    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-    .small{font-size:12px;padding:6px 8px}
-    footer{margin-top:18px;color:var(--muted);font-size:12px}
-    .meta{font-size:12px;color:var(--muted)}
+    :root {--bg:#f3f6ff;--card:#ffffff;--muted:#6b7280;--accent:#86b7ff;}* {box-sizing: border-box;font-family: "Inter", sans-serif;}html, body {height: 100%;margin: 0;background: var(--bg);color: #1a1a1a;}.wrap {max-width: 900px;margin: 30px auto;padding: 20px;}header h1 {margin: 0;font-size: 24px;font-weight: 700;}p.lead {margin: 0;color: var(--muted);font-size: 14px;}.controls {display: flex;gap: 14px;align-items: center;margin-top: 16px;flex-wrap: wrap;}.card {background: var(--card);padding: 14px;border-radius: 14px;border: 1px solid #e5e7eb;box-shadow: 0 4px 10px rgba(0,0,0,0.05);}.drop {margin-top: 20px;border: 3px dashed #d5d9e2;border-radius: 14px;padding: 28px;text-align: center;cursor: pointer;transition: background 0.2s;}.drop:hover {background: #eef3ff;}.files-grid {display: grid;grid-template-columns: repeat(auto-fill,minmax(200px,1fr));gap: 14px;margin-top: 16px;}.file-card {background: #ffffff;padding: 12px;border-radius: 12px;border: 1px solid #e5e7eb;display: flex;flex-direction: column;gap: 8px;}.thumb {width: 100%;height: 150px;display: block;object-fit: contain;background: #f2f4fa;border-radius: 10px;}.row {display: flex;gap: 8px;align-items: center;}.grow {flex: 1;}label {font-size: 13px;color: var(--muted);}input[type=range] {width: 200px;}input[type=number] {width: 60px;padding: 6px;border-radius: 8px;border: 1px solid #d1d5db;background: white;color: #111;}.btn {background: var(--accent);border: none;padding: 8px 12px;border-radius: 10px;color: #1f2a37;font-weight: 600;cursor: pointer;transition: background 0.2s;}.btn:hover {background: #9dc5ff;}.btn.ghost {background: transparent;border: 1px solid #d1d5db;color: #374151;}.small {font-size: 13px;padding: 6px 8px;}footer {margin-top: 20px;color: var(--muted);font-size: 12px;}.meta {font-size: 12px;color: var(--muted);}
   </style>
 </head>
 <body>
